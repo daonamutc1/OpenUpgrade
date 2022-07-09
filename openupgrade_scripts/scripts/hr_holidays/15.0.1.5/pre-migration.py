@@ -222,8 +222,18 @@ def _create_column_hr_leave_holiday_allocation_id(env):
     )
 
 
+def _set_dafult_requires_allocation(env):
+    openupgrade.logged_query(
+        env.cr,
+        """
+        ALTER TABLE hr_leave_type
+        ADD COLUMN IF NOT EXISTS requires_allocation varchar DEFAULT 'yes'""",
+    )
+
+
 @openupgrade.migrate()
 def migrate(env, version):
+    _set_dafult_requires_allocation(env)
     _fast_fill_hr_leave_employee_company_id(env)
     _map_hr_leave_state(env)
     _map_hr_leave_allocation_approver_id(env)
